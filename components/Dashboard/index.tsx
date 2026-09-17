@@ -72,6 +72,7 @@ export default function Dashboard() {
                     <NavCard emoji="💌" title="Open When..." href="/letters" />
                     <NavCard emoji="🍜" title="Our List" href="/list" />
                     <NavCard emoji="🔐" title="Anniversary Surprise" href="/surprise" />
+                    <NavCard emoji="🩷" title="Cycle" href="/cycle" />
                 </div>
             </motion.section>
         </motion.main>
