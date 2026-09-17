@@ -3,6 +3,7 @@
 import { AnimatePresence } from "framer-motion";
 import { useState } from "react";
 import Gate from "@/components/Gate";
+import Dashboard from "@/components/Dashboard";
 
 export default function Home() {
     const [entered, setEntered] = useState(false);
@@ -12,7 +13,7 @@ export default function Home() {
             {!entered ? (
                 <Gate key="gate" onEnter={() => setEntered(true)} />
             ) : (
-                <div key="dashboard">Dashboard goes here</div>
+                <Dashboard key="dashboard" />
             )}
         </AnimatePresence>
     );
