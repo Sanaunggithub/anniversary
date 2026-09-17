@@ -1,43 +1,35 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import type { CycleData } from "@/lib/cycleStorage";
+import { getCycleData } from "@/lib/cycleStorage";
 import CycleDashboard from "./CycleDashboard";
 import CycleSetupForm from "./CycleSetupForm";
-import { getCycleData, type CycleData } from "@/lib/cycleStorage";
 
 export default function Cycle() {
   const [data, setData] = useState<CycleData | null>(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setData(getCycleData());
-    setIsLoading(false);
+    setLoading(false);
   }, []);
 
   return (
-    <section>
-      <div className="mb-10 text-center">
-        <h1 className="font-serif-display text-4xl text-ink sm:text-5xl">
-          Cycle
-        </h1>
-        <p className="mt-3 text-muted">
+    <section className="space-y-10">
+      <header className="text-center">
+        <h1 className="font-serif-display text-5xl text-ink">Cycle</h1>
+        <p className="mt-2 font-sans-ui text-sm text-muted">
           Just for you — stored only on this device.
         </p>
-      </div>
+      </header>
 
-      {isLoading ? (
-        <div className="mx-auto h-64 max-w-md animate-pulse rounded-2xl bg-accent-soft" />
-      ) : !data || isEditing ? (
-        <CycleSetupForm
-          onSaved={(savedData) => {
-            setData(savedData);
-            setIsEditing(false);
-          }}
-        />
-      ) : (
-        <CycleDashboard data={data} onEdit={() => setIsEditing(true)} />
-      )}
+      {!loading &&
+        (data ? (
+          <CycleDashboard data={data} onSaved={setData} />
+        ) : (
+          <CycleSetupForm onSaved={setData} />
+        ))}
     </section>
   );
 }

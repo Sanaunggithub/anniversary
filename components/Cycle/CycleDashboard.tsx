@@ -1,55 +1,63 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { useState } from "react";
+import type { CycleData } from "@/lib/cycleStorage";
 import {
   getCurrentCycleDay,
-  getCurrentPhase,
   getDaysUntilNextPeriod,
-  getFertileWindow,
+  getNextPeriodDate,
 } from "@/lib/cycleCalculations";
-import type { CycleData } from "@/lib/cycleStorage";
+import CycleSetupForm from "./CycleSetupForm";
 
-interface CycleDashboardProps {
+type Props = {
   data: CycleData;
-  onEdit: () => void;
-}
-
-const phaseLabels = {
-  period: "Period",
-  follicular: "Follicular phase",
-  fertile: "Fertile window",
-  luteal: "Luteal phase",
+  onSaved: (data: CycleData) => void;
 };
 
-function formatDate(date: Date) {
-  return date.toLocaleDateString(undefined, {
-    month: "short",
-    day: "numeric",
-  });
-}
+export default function CycleDashboard({ data, onSaved }: Props) {
+  const [editing, setEditing] = useState(false);
+  const currentDay = getCurrentCycleDay(data);
+  const daysUntil = getDaysUntilNextPeriod(data);
+  const nextPeriod = getNextPeriodDate(data);
+  const progress = Math.min(100, (currentDay / data.cycleLength) * 100);
 
-export default function CycleDashboard({
-  data,
-  onEdit,
-}: CycleDashboardProps) {
-  const cycleDay = getCurrentCycleDay(data);
-  const phase = getCurrentPhase(data);
-  const fertileWindow = getFertileWindow(data);
-  const daysUntilPeriod = getDaysUntilNextPeriod(data);
-  const progress = Math.min(100, (cycleDay / data.cycleLength) * 100);
+  if (editing) {
+    return (
+      <CycleSetupForm
+        initialData={data}
+        onSaved={(savedData) => {
+          setEditing(false);
+          onSaved(savedData);
+        }}
+      />
+    );
+  }
 
   return (
-    <div className="mx-auto max-w-2xl space-y-5">
-      <div className="rounded-2xl bg-background p-6 text-center shadow-sm sm:p-8">
-        <p className="font-serif-display text-3xl text-ink">
-          Day {cycleDay} of your cycle
+    <div className="mx-auto max-w-md space-y-8 text-center">
+      <div>
+        <p className="font-serif-display text-4xl text-ink">
+          Day {currentDay} of your cycle
         </p>
 
-        <span className="mt-4 inline-flex rounded-full bg-accent-soft px-4 py-2 text-sm text-ink">
-          {phaseLabels[phase]}
-        </span>
+        <p className="mt-6 font-sans-ui text-sm text-muted">
+          Your next period is predicted for
+        </p>
+        <p className="mt-1 font-serif-display text-2xl text-accent">
+          {nextPeriod.toLocaleDateString(undefined, {
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+          })}
+        </p>
+        <p className="mt-1 font-sans-ui text-sm text-muted">
+          in {daysUntil} {daysUntil === 1 ? "day" : "days"}
+        </p>
+      </div>
 
-        <div className="mt-8 h-3 overflow-hidden rounded-full bg-accent/10">
+      <div className="space-y-2 text-left">
+        <div className="h-3 overflow-hidden rounded-full bg-accent-soft">
           <motion.div
             initial={{ width: 0 }}
             animate={{ width: `${progress}%` }}
@@ -57,30 +65,15 @@ export default function CycleDashboard({
             className="h-full rounded-full bg-accent"
           />
         </div>
-      </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div className="rounded-2xl bg-accent-soft p-5">
-          <p className="text-sm text-muted">Next period</p>
-          <p className="mt-2 font-serif-display text-2xl text-ink">
-            {daysUntilPeriod === 0
-              ? "Expected today"
-              : `${daysUntilPeriod} days`}
-          </p>
-        </div>
-
-        <div className="rounded-2xl bg-accent-soft p-5">
-          <p className="text-sm text-muted">Fertile window</p>
-          <p className="mt-2 font-serif-display text-2xl text-ink">
-            {formatDate(fertileWindow.start)}–{formatDate(fertileWindow.end)}
-          </p>
-        </div>
+        <p className="font-sans-ui text-xs text-muted">
+          Day {currentDay} of {data.cycleLength}
+        </p>
       </div>
 
       <button
         type="button"
-        onClick={onEdit}
-        className="mx-auto block text-sm text-muted underline underline-offset-4 transition hover:text-ink"
+        onClick={() => setEditing(true)}
+        className="font-sans-ui text-sm text-accent underline underline-offset-4"
       >
         Edit my info
       </button>

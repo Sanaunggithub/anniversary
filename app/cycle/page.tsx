@@ -3,9 +3,9 @@ import Cycle from "@/components/Cycle";
 
 export default function CyclePage() {
   return (
-    <main className="min-h-screen bg-background px-5 py-8 sm:px-8">
-      <div className="mx-auto max-w-5xl">
-        <BackLink />
+    <main className="px-6 py-8">
+      <BackLink />
+      <div className="mx-auto mt-8 max-w-3xl">
         <Cycle />
       </div>
     </main>

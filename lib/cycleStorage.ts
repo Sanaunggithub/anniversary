@@ -1,7 +1,6 @@
 export type CycleData = {
   lastPeriodStart: string;
   cycleLength: number;
-  periodLength: number;
 };
 
 const STORAGE_KEY = "cycle-data";
@@ -10,40 +9,35 @@ export function getCycleData(): CycleData | null {
   if (typeof window === "undefined") return null;
 
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    if (!raw) return null;
+    const value = window.localStorage.getItem(STORAGE_KEY);
+    if (!value) return null;
 
-    const data = JSON.parse(raw) as Partial<CycleData>;
+    const parsed = JSON.parse(value) as CycleData;
 
     if (
-      typeof data.lastPeriodStart !== "string" ||
-      Number.isNaN(new Date(`${data.lastPeriodStart}T00:00:00`).getTime()) ||
-      typeof data.cycleLength !== "number" ||
-      !Number.isFinite(data.cycleLength) ||
-      data.cycleLength <= 0 ||
-      typeof data.periodLength !== "number" ||
-      !Number.isFinite(data.periodLength) ||
-      data.periodLength <= 0
+      typeof parsed.lastPeriodStart !== "string" ||
+      !parsed.lastPeriodStart ||
+      typeof parsed.cycleLength !== "number" ||
+      !Number.isFinite(parsed.cycleLength) ||
+      parsed.cycleLength <= 0
     ) {
       return null;
     }
 
-    return {
-      lastPeriodStart: data.lastPeriodStart,
-      cycleLength: data.cycleLength,
-      periodLength: data.periodLength,
-    };
+    return parsed;
   } catch {
     return null;
   }
 }
 
 export function saveCycleData(data: CycleData): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  if (typeof window !== "undefined") {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }
 }
 
 export function clearCycleData(): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.removeItem(STORAGE_KEY);
+  if (typeof window !== "undefined") {
+    window.localStorage.removeItem(STORAGE_KEY);
+  }
 }
