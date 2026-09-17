@@ -22,14 +22,10 @@ const navVariants = {
 };
 
 export default function Dashboard() {
-    const [message, setMessage] = useState(rotatingMessages[0]);
-
-    useEffect(() => {
-        if (rotatingMessages.length < 2) return;
-
-        const alternatives = rotatingMessages.filter((item) => item !== rotatingMessages[0]);
-        setMessage(alternatives[Math.floor(Math.random() * alternatives.length)]);
-    }, []);
+    const [message, setMessage] = useState(() => {
+        const randomIndex = Math.floor(Math.random() * rotatingMessages.length);
+        return rotatingMessages[randomIndex];
+    });
 
     return (
         <motion.main

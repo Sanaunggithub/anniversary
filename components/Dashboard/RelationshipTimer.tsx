@@ -62,11 +62,9 @@ function pad(value: number) {
 }
 
 export default function RelationshipTimer() {
-    const [now, setNow] = useState<Date | null>(null);
+    const [now, setNow] = useState(() => new Date());
 
     useEffect(() => {
-        setNow(new Date());
-
         const interval = window.setInterval(() => {
             setNow(new Date());
         }, 1000);

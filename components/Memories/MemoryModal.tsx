@@ -10,13 +10,34 @@ interface MemoryModalProps {
     onClose: () => void;
 }
 
-export default function MemoryModal({ memory, onClose }: MemoryModalProps) {
+// Owns imageFailed locally. Parent gives it key={memory.id}, so React
+// remounts this fresh for each memory — imageFailed naturally starts
+// at false again, no effect-based reset needed.
+function MemoryImage({ memory }: { memory: Memory }) {
     const [imageFailed, setImageFailed] = useState(false);
 
-    useEffect(() => {
-        setImageFailed(false);
-    }, [memory]);
+    return (
+        <div className="relative aspect-[4/3] w-full bg-accent-soft">
+            {!imageFailed ? (
+                <Image
+                    src={memory.photo}
+                    alt={memory.title}
+                    fill
+                    sizes="(max-width: 672px) 100vw, 672px"
+                    className="object-cover"
+                    onError={() => setImageFailed(true)}
+                />
+            ) : (
+                <div
+                    className="absolute inset-0 bg-accent-soft"
+                    aria-label="Image unavailable"
+                />
+            )}
+        </div>
+    );
+}
 
+export default function MemoryModal({ memory, onClose }: MemoryModalProps) {
     useEffect(() => {
         if (!memory) return;
 
@@ -35,11 +56,11 @@ export default function MemoryModal({ memory, onClose }: MemoryModalProps) {
 
     const formattedDate = memory
         ? new Intl.DateTimeFormat("en-US", {
-              month: "long",
-              day: "numeric",
-              year: "numeric",
-              timeZone: "UTC",
-          }).format(new Date(`${memory.date}T00:00:00Z`))
+            month: "long",
+            day: "numeric",
+            year: "numeric",
+            timeZone: "UTC",
+        }).format(new Date(`${memory.date}T00:00:00Z`))
         : "";
 
     return (
@@ -72,23 +93,7 @@ export default function MemoryModal({ memory, onClose }: MemoryModalProps) {
                             ×
                         </button>
 
-                        <div className="relative aspect-[4/3] w-full bg-accent-soft">
-                            {!imageFailed ? (
-                                <Image
-                                    src={memory.photo}
-                                    alt={memory.title}
-                                    fill
-                                    sizes="(max-width: 672px) 100vw, 672px"
-                                    className="object-cover"
-                                    onError={() => setImageFailed(true)}
-                                />
-                            ) : (
-                                <div
-                                    className="absolute inset-0 bg-accent-soft"
-                                    aria-label="Image unavailable"
-                                />
-                            )}
-                        </div>
+                        <MemoryImage key={memory.id} memory={memory} />
 
                         <div className="p-6 sm:p-8">
                             <time

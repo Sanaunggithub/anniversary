@@ -1,19 +1,13 @@
-import Link from "next/link";
 import Timeline from "@/components/Timeline";
+import BackLink from "@/components/BackLink";
 
 export default function StoryPage() {
     return (
-        <div className="min-h-screen overflow-x-hidden px-5 py-8 sm:px-8 sm:py-12">
-            <div className="mx-auto mb-10 w-full max-w-5xl">
-                <Link
-                    href="/"
-                    className="font-sans-ui text-sm text-muted transition-colors hover:text-accent"
-                >
-                    ← Back home
-                </Link>
+        <main className="min-h-screen overflow-x-hidden px-5 py-8 sm:px-8 sm:py-12">
+            <div className="mx-auto max-w-5xl">
+                <BackLink />
+                <Timeline />
             </div>
-
-            <Timeline />
-        </div>
+        </main>
     );
 }
